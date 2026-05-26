@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Patient</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Add Patient</h2>
+    <input type="number" id="doctor_id" placeholder="Doctor ID">
+    <input type="text" id="patient_name" placeholder="Patient Name">
+    <input type="text" id="disease" placeholder="Disease">
+    <input type="date" id="appointment_date">
+
+    <select id="status">
+        <option>Admitted</option>
+        <option>Discharged</option>
+    </select>
+    <button onclick="addPatient()">Add Patient</button>
+
+    <br><br>
+    <a href="/"><button style="background-color: gray;">Back Home</button></a>
+</div>
+
+<script>
+async function addPatient(){
+    const data = {
+        Doctor_id: parseInt(document.getElementById("doctor_id").value),
+        Patient_name: document.getElementById("patient_name").value,
+        Disease: document.getElementById("disease").value,
+        Appointment_date: document.getElementById("appointment_date").value,
+        Patient_status: document.getElementById("status").value
+    }
+    const response = await fetch("http://127.0.0.1:8000/add_Patient",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(data)
+    })
+    const result = await response.json()
+    alert(result.message)
+}
+</script>
+</body>
+</html>

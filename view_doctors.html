@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Doctors</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>Doctors List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="doctorTable"></tbody>
+    </table>
+    <br><br>
+    <a href="/"><button style="background-color: gray;">Back Home</button></a>
+</div>
+
+<script>
+async function loadDoctors(){
+    const response = await fetch("http://127.0.0.1:8000/Doctor")
+    const data = await response.json()
+    let rows = ""
+    data.forEach(d => {
+        rows += `
+        <tr>
+            <td>${d.Doctor_id}</td>
+            <td>${d.Doctor_name}</td>
+            <td>${d.Specialization}</td>
+            <td>${d.email}</td>
+        </tr>
+        `
+    })
+    document.getElementById("doctorTable").innerHTML = rows
+}
+loadDoctors()
+</script>
+</body>
+</html>

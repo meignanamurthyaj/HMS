@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Patients</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container" style="width: 800px;">
+    <h2>Patients List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Doctor Name</th>
+                <th>Patient Name</th>
+                <th>Disease</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="patientTable"></tbody>
+    </table>
+    <br><br>
+    <a href="/"><button style="background-color: gray;">Back Home</button></a>
+</div>
+
+<script>
+async function loadPatients(){
+    const response = await fetch("http://127.0.0.1:8000/Patients");
+    const data = await response.json();
+    let rows = "";
+
+    data.forEach(p => {
+        const statusSelect = `
+            <select id="status_${p.Patient_id}">
+                <option value="Admitted" ${p.Patient_status === 'Admitted' ? 'selected' : ''}>Admitted</option>
+                <option value="Discharged" ${p.Patient_status === 'Discharged' ? 'selected' : ''}>Discharged</option>
+            </select>
+        `;
+
+        rows += `
+        <tr>
+            <td>${p.Patient_id}</td>
+            <td>${p.Doctor_name}</td>
+            <td>${p.Patient_name}</td>
+            <td>${p.Disease}</td>
+            <td>${statusSelect}</td>
+            <td>
+                <button onclick="updateStatus(${p.Patient_id})" style="background-color: green; padding: 5px;">Update</button>
+                <button onclick="deletePatient(${p.Patient_id})" style="background-color: red; padding: 5px;">Delete</button>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById("patientTable").innerHTML = rows;
+}
+
+async function updateStatus(patientId) {
+    const newStatus = document.getElementById(`status_${patientId}`).value;
+    const response = await fetch(`http://127.0.0.1:8000/update_Patient_status/${patientId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Patient_status: newStatus })
+    });
+    const result = await response.json();
+    alert(result.message || result.detail);
+    loadPatients();
+}
+
+async function deletePatient(patientId) {
+    if(!confirm("Are you sure you want to delete this patient?")) return;
+    const response = await fetch(`http://127.0.0.1:8000/delete_Patient/${patientId}`, {
+        method: "DELETE"
+    });
+    const result = await response.json();
+    alert(result.message || result.detail);
+    loadPatients();
+}
+
+loadPatients();
+</script>
+</body>
+</html>
